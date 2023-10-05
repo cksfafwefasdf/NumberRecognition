@@ -9,4 +9,7 @@ add_executable(
         matrix_func/matrix.cpp
         main.cpp
         train/train.h
-        train/readfile.cpp)
+        train/readfile.cpp
+        train/train.cpp
+        train/filter.cpp
+        train/output.cpp)

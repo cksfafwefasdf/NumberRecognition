@@ -1,10 +1,15 @@
 #include "train.h"
-#include <fstream>
-#include <iostream>
+
 using namespace std;
 
+//row_num 是读第几行，从1计数
 string readLine(string file_name,int row_num,int row_size)
 {
+    if(row_num<=0)
+    {
+        cerr<<"row number err"<<endl;
+        return "";
+    }
     fstream file;
     char line[1024];
     file.open(file_name,ios::in);

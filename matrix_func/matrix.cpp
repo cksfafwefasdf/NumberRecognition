@@ -26,9 +26,12 @@ Matrix::Matrix(int row,int column)
 
 Matrix::~Matrix()
 {
-    int temprow=this->row,tempcolumn=this->column;
-    destroy();
-    cout<<"free finish "<<temprow<<" "<<tempcolumn<<endl;
+    if(this->m!= nullptr)
+    {
+        int temprow=this->row,tempcolumn=this->column;
+        destroy();
+        cout<<"free finish "<<temprow<<" "<<tempcolumn<<endl;
+    }
 }
 
 void Matrix::destroy() const
@@ -118,6 +121,17 @@ void Matrix::add(const Matrix&m2) const
     }
 }
 
+void Matrix::add(double num) const
+{
+    for(int i=0;i<row;i++)
+    {
+        for(int j=0;j<column;j++)
+        {
+            this->m[i][j]=this->m[i][j]+num;
+        }
+    }
+}
+
 void Matrix::multiply(double num) const
 {
     for(int i=0;i<row;i++)
@@ -189,6 +203,10 @@ void Matrix::hadamard(const Matrix&m2) const
             this->m[i][j]=this->m[i][j]*m2.m[i][j];
         }
     }
+}
+
+Matrix::Matrix(){
+    this->m= nullptr;
 }
 
 //return the reference in order to implement chain operation

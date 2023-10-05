@@ -12,9 +12,11 @@ public:
     int column;
     double **m; //pointer of matrix
     Matrix(int row,int column);
+    Matrix();
     ~Matrix();
     void sub(const Matrix &m2) const;
     void add(const Matrix &m2) const;
+    void add(double num) const;
     void multiply(const Matrix &m2);
     void multiply(double num) const;
     void hadamard(const Matrix &m2) const;
