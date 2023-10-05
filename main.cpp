@@ -1,34 +1,16 @@
+#include <string>
 #include <iostream>
+#include "train/train.h"
 #include "matrix_func/matrix.h"
 using namespace std;
 
-Matrix test(Matrix &m2)
+const string fileName = "../data/data1.txt";
+
+int main()
 {
-    Matrix m = m2;
-    return m;
-}
+    string data = readLine(fileName, 3, 64);
+    Matrix m = conv2img(data,6,6);
 
-int main() {
-    Matrix m(2,3);
-    Matrix m2(3,2);
-
-    for(int i=0;i<3;i++){
-        for(int j=0;j<2;j++){
-            m2.m[i][j]=-1.5;
-        }
-    }
-
-    for(int i=0;i<2;i++){
-        for(int j=0;j<3;j++){
-            m.m[i][j]=3.5;
-        }
-    }
-    m=m*m2;
-    m.hadamard(m);
-    m.Print();
-//    cout<<endl;
-//    m3.transpose();
-//    m3.Print();
     return 0;
 }
 

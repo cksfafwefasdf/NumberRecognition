@@ -7,4 +7,6 @@ add_executable(
         main.cpp
         matrix_func/matrix.h
         matrix_func/matrix.cpp
-        main.cpp)
+        main.cpp
+        train/train.h
+        train/readfile.cpp)
