@@ -118,3 +118,67 @@ Matrix* pooling(const Matrix &conv,Matrix* filter_deltas,int filter_size)
     return pool;
 }
 
+Matrix* derivative(ParamList paramList,Matrix &img,vector<Matrix *>& filter_deltas,vector<double>& output_deltas,vector<Matrix*> pools)
+{
+    //偏导数组
+    int count=0;
+    Matrix *differ = new Matrix(1,paramList.param_num);
+
+    for(int k=0;k<paramList.conv_params.size();k++)
+    {
+        for(int i=0;i<paramList.conv_params[k]->row;i++)
+        {
+            for(int j=0;j<paramList.conv_params[k]->column;j++)
+            {
+                double sum=0;
+                for(int z=0;z<filter_deltas[k]->row;z++)
+                {
+                    for(int v=0;v<filter_deltas[k]->column;v++)
+                    {
+                        sum=sum+filter_deltas[k]->m[z][v]*img.m[i+z][j+v];
+                    }
+                }
+                differ->m[0][count]=sum;
+                count++;
+            }
+        }
+    }
+
+    for(int k=0;k<paramList.conv_bias.size();k++)
+    {
+        double sum=0;
+        //differ[count]=
+        for(int i=0;i<filter_deltas[k]->row;i++)
+        {
+            for(int j=0;j<filter_deltas[k]->column;j++)
+            {
+                sum=sum+filter_deltas[k]->m[i][j];
+            }
+        }
+        differ->m[0][count]=sum;
+        count++;
+    }
+
+    for(int k=0;k<paramList.output_params.size();k++)
+    {
+        for(int n=0;n<paramList.output_params[k].size();n++)
+        {
+            for(int i=0;i<paramList.output_params[k][n]->row;i++)
+            {
+                for(int j=0;j<paramList.output_params[k][n]->column;j++)
+                {
+                    differ->m[0][count]= output_deltas[k]*pools[n]->m[i][j];
+                    count++;
+                }
+            }
+        }
+    }
+
+    for(int i=0;i<paramList.output_bias.size();i++)
+    {
+        differ->m[0][count]=output_deltas[i];
+        count++;
+    }
+
+    return differ;
+}

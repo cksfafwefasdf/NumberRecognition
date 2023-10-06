@@ -8,8 +8,21 @@
 #ifndef NUMBER_TRAIN_H
 #define NUMBER_TRAIN_H
 
+const std::string train_data = "../data/data1.txt";
+const std::string init_filter = "../data/init_filter.txt";
+const std::string init_output_layer = "../data/init_output_layer.txt";
+const std::string true_answer = "../data/true_answer.txt";
+const int OUTPUT_UNIT_NUM=3;
+const int POOL_NUM=3;
+const int FILTER_NUM=3;
+const int DATA_SIZE=96;
+const int POOL_SIZE = 2;
+const int FILTER_SIZE = 3;
+const int alpha = 0.2; //步长
+
 class ParamList{
 public:
+    int param_num;
     std::vector<Matrix*> conv_params;
     std::vector<std::vector<Matrix*>> output_params;
     std::vector<double> conv_bias;
@@ -49,4 +62,8 @@ double output(OutputUnit &units,std::vector<Matrix*> matrixes);
 double totalCost(std::vector<double> &output,std::vector<double> &true_ans);
 double outputDelta(double ao,double zo,double t);
 double filterDelta(std::vector<double> &output_deltas,std::vector<double> &weights,double k,double zFk,int outputunit_num);
+void initParamList(ParamList& paramList);
+void printParamList(const ParamList& paramList);
+void getParamFromList(Matrix* paramVector,ParamList &list);
+Matrix* derivative(ParamList paramList,Matrix &img,std::vector<Matrix *>& filter_deltas,std::vector<double>& output_deltas,std::vector<Matrix*> pools);
 #endif //NUMBER_TRAIN_H

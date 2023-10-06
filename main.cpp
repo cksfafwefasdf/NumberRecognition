@@ -3,23 +3,9 @@
 
 using namespace std;
 
-const string train_data = "../data/data1.txt";
-const string init_filter = "../data/init_filter.txt";
-const string init_output_layer = "../data/init_output_layer.txt";
-const string true_answer = "../data/true_answer.txt";
-const int OUTPUT_UNIT_NUM=3;
-const int POOL_NUM=3;
-const int FILTER_NUM=3;
-const int DATA_SIZE=1;
-const int POOL_SIZE = 2;
-const int FILTER_SIZE = 3;
-const int alpha = 0.2; //步长
-
-
 
 void initAnser(vector<vector<double>> &answers);
-void initParamList(ParamList& paramList);
-void printParamList(ParamList& paramList);
+void onDestroy();
 
 int main()
 {
@@ -30,6 +16,14 @@ int main()
     initAnser(answers);
     //读取硬盘中的初始化参数
     initParamList(paramList);
+    Matrix* total_differ = new Matrix(1,paramList.param_num);
+
+    //初始化总的偏导数
+    for(int i=0;i<paramList.param_num;i++)
+    {
+        total_differ->m[0][i]=0;
+    }
+    total_differ->Print();
 
     for(int times=1;times<=DATA_SIZE;times++)
     {
@@ -82,6 +76,7 @@ int main()
             //conv_input->Print();
             //在池化的时候顺便就可以把输出层的一些delta算出来了
             Matrix* pool = pooling(conv,filter_deltas[i-1]);
+            //pool中存放的是zp
             pools.push_back(pool);
         }
 
@@ -95,7 +90,7 @@ int main()
         for(int i=0;i<units.size();i++)
         {
             double res = output(units[i],pools);
-            //zos里面存的是Zno outputs里面存的是Ano
+            //zos里面存的是Zno outputs里面存的是Ano,zos是输出层的输出值
             zos.push_back(res);
             outputs.push_back(activate(res));
             //cout<<outputs[i]<<endl;
@@ -133,18 +128,42 @@ int main()
         double res = totalCost(outputs,answers[times-1]);
         totalC=totalC+res;
 
-        filter_deltas[0]->Print();
-        cout<<endl;
-        filter_deltas[1]->Print();
-        cout<<endl;
-        filter_deltas[2]->Print();
+//        filter_deltas[0]->Print();
+//        cout<<endl;
+//        filter_deltas[1]->Print();
+//        cout<<endl;
+//        filter_deltas[2]->Print();
 
+        //开始梯度下降,利用误差反向传递法计算梯度
+        cout<<paramList.param_num<<endl;
+        Matrix* paramVector =new Matrix(1,paramList.param_num);
+        getParamFromList(paramVector,paramList);
+//        for(int i=0;i<paramVector->column;i++)
+//        {
+//            cout<<paramVector->m[0][i]<<endl;
+//        }
+
+        //开始优化
+        //pools[0]->Print();
+        //求出每一个图片的偏导数
+        Matrix* differ = derivative(paramList,img,filter_deltas,output_deltas,pools);
+        //differ->Print();
+        total_differ->add(*differ);
     }
+    total_differ->Print();
+
+
     cout<<"------------ totalC ----------- "<<endl;
     cout<<totalC<<endl;
     cout<<"------------ totalC ----------- "<<endl;
+    onDestroy();
     return 0;
 }
+
+void onDestroy(){
+    //TODO
+}
+
 
 void initAnser(vector<vector<double>> &answers)
 {
@@ -160,110 +179,4 @@ void initAnser(vector<vector<double>> &answers)
             ss>>answers[i][j];
         }
     }
-}
-
-void initParamList(ParamList& paramList)
-{
-    vector<string> filterInitParams;
-    vector<string> outputInitParams;
-    paramList.conv_params.reserve(FILTER_NUM);
-    for(int i=0;i<FILTER_NUM;i++)
-    {
-        paramList.conv_params[i]=new Matrix(FILTER_SIZE,FILTER_SIZE);
-    }
-    //vector<vector<Matrix*>> output_params;
-    for(int i=0;i<OUTPUT_UNIT_NUM;i++)
-    {
-        paramList.output_params.push_back(vector<Matrix*>());
-        for(int j=0;j<POOL_NUM;j++)
-        {
-            Matrix *new_m = new Matrix(POOL_SIZE,POOL_SIZE);
-            paramList.output_params[i].push_back(new_m);
-        }
-    }
-    //读取卷积层数据
-    for(int i=0;i<FILTER_NUM;i++)
-    {
-        string param=readLine(init_filter,i+1,1000);
-        filterInitParams.push_back(param);
-    }
-
-    for(int i=0;i<OUTPUT_UNIT_NUM*POOL_NUM;i++)
-    {
-        string outputParam = readLine(init_output_layer,i+1,1000);
-        outputInitParams.push_back(outputParam);
-    }
-    for(int k=0;k<filterInitParams.size();k++)
-    {
-        stringstream ss(filterInitParams[k]);
-        for(int i=0;i<FILTER_SIZE;i++)
-        {
-            for(int j=0;j<FILTER_SIZE;j++)
-            {
-                ss>>paramList.conv_params[k]->m[i][j];
-            }
-        }
-        double x;
-        ss>>x;
-        paramList.conv_bias.push_back(x);
-    }
-
-    bool lock=true;
-    for(int k=0;k<OUTPUT_UNIT_NUM;k++)
-    {
-        for(int n=0;n<POOL_NUM;n++)
-        {
-            stringstream ss(outputInitParams[k*POOL_NUM+n]);
-            for(int i=0;i<POOL_SIZE;i++)
-            {
-                for(int j=0;j<POOL_SIZE;j++)
-                {
-                    //第k个o层的第n个pool
-                    ss>>paramList.output_params[k][n]->m[i][j];
-                }
-            }
-            double x;
-            ss>>x;
-            if(lock)
-            {
-                paramList.output_bias.push_back(x);
-                lock= false;
-            }
-        }
-        lock= true;
-    }
-    //printParamList(paramList);
-}
-
-void printParamList(ParamList& paramList)
-{
-    cout<<"------param--------"<<endl;
-    for(int i=0;i<paramList.output_params.size();i++)
-    {
-        for(int j=0;j<paramList.output_params[i].size();j++)
-        {
-            paramList.output_params[i][j]->Print();
-        }
-    }
-
-    for(int i=0;i<paramList.conv_params.size();i++)
-    {
-        paramList.conv_params[i]->Print();
-    }
-    cout<<"------param--------"<<endl;
-    cout<<endl;
-    cout<<"------bias--------"<<endl;
-
-    for(int i=0;i<3;i++)
-    {
-        cout<<paramList.conv_bias[i]<<" ";
-    }
-    cout<<endl;
-    for(int i=0;i<3;i++)
-    {
-        cout<<paramList.output_bias[i]<<" ";
-    }
-    cout<<endl;
-    cout<<"------bias--------"<<endl;
-    cout<<endl;
 }

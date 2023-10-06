@@ -12,4 +12,5 @@ add_executable(
         train/readfile.cpp
         train/train.cpp
         train/filter.cpp
-        train/output.cpp)
+        train/output.cpp
+        train/param_list.cpp)
