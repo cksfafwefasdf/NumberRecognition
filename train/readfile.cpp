@@ -22,6 +22,7 @@ string readLine(string file_name,int row_num,int row_size)
         file.getline(line,row_size);
     }
     string ret(line);
+    file.close();
     return ret;
 }
 

@@ -88,7 +88,14 @@ void initParamList(ParamList& paramList)
 
 void printParamList(const ParamList& paramList)
 {
-    cout<<"------param--------"<<endl;
+    cout<<"------param conv--------"<<endl;
+    for(int i=0;i<paramList.conv_params.size();i++)
+    {
+        paramList.conv_params[i]->Print();
+    }
+    cout<<"------param conv--------"<<endl;
+    cout<<endl;
+    cout<<"------param output--------"<<endl;
     for(int i=0;i<paramList.output_params.size();i++)
     {
         for(int j=0;j<paramList.output_params[i].size();j++)
@@ -97,11 +104,7 @@ void printParamList(const ParamList& paramList)
         }
     }
 
-    for(int i=0;i<paramList.conv_params.size();i++)
-    {
-        paramList.conv_params[i]->Print();
-    }
-    cout<<"------param--------"<<endl;
+    cout<<"------param output--------"<<endl;
     cout<<endl;
     cout<<"------bias--------"<<endl;
 
@@ -119,7 +122,7 @@ void printParamList(const ParamList& paramList)
     cout<<endl;
 }
 
-void putParamINList(ParamList& paramList,Matrix* paramVector)
+void putParamInList(ParamList& paramList,Matrix* paramVector)
 {
     int count=0;
     //先读卷积层的参数

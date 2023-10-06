@@ -58,7 +58,7 @@ Matrix::~Matrix()
     {
         int temprow=this->row,tempcolumn=this->column;
         destroy();
-        cout<<"free finish "<<temprow<<" "<<tempcolumn<<endl;
+        //cout<<"free finish "<<temprow<<" "<<tempcolumn<<endl;
     }
 }
 
