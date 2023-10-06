@@ -24,6 +24,34 @@ Matrix::Matrix(int row,int column)
     }
 }
 
+//Matrix& Matrix::operator=(const Matrix &m2){
+//    this->row=m2.row;
+//    this->column=m2.column;
+//    this->m=(double**)malloc(row*sizeof(double*));
+//    if(this->m== nullptr)
+//    {
+//        cerr<<"err ! mem is not enough"<<endl;
+//        exit(-1);
+//    }
+//    for(int i=0;i<row;i++)
+//    {
+//        this->m[i]=(double *) malloc(column*sizeof(double));
+//        if(this->m== nullptr)
+//        {
+//            cerr<<"err ! mem is not enough"<<endl;
+//            exit(-1);
+//        }
+//    }
+//
+//    for(int i=0;i<row;i++)
+//    {
+//        for(int j=0;j<column;j++)
+//        {
+//            this->m[i][j]=m2.m[i][j];
+//        }
+//    }
+//}
+
 Matrix::~Matrix()
 {
     if(this->m!= nullptr)

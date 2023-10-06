@@ -1,7 +1,7 @@
 //
 // Created by cksfafwefasdf on 23-10-4.
 //
-
+#include <iostream>
 #ifndef NUMBER_MATRIX_H
 #define NUMBER_MATRIX_H
 

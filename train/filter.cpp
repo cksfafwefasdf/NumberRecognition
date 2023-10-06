@@ -24,7 +24,7 @@ bool Filter::movRight()
     this->bottom_right.first++;
     return true;
 }
-Filter::Filter(int size, int border,string param) {
+Filter::Filter(int size, int border,Matrix* params,double bias) {
     this->border=border;
     this->size=size;
     this->top_left.first=this->top_left.second=0;
@@ -34,15 +34,14 @@ Filter::Filter(int size, int border,string param) {
     static Matrix m(size,size);
     this->w=&m;
 
-    stringstream ss(param);
     for(int i=0;i<size;i++)
     {
         for(int j=0;j<size;j++)
         {
-            ss>>this->w->m[i][j];
+            this->w->m[i][j]=params->m[i][j];
         }
     }
-    ss>>this->bias;
+    this->bias=bias;
 }
 
 Filter::Filter(int size,int border){
